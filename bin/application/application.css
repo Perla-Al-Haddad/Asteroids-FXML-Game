@@ -1,0 +1,24 @@
+
+.label {
+	-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 10, 0.5, 0.0, 0.0);
+}
+
+#gameOverScreen {
+	visibility: hidden;
+}
+
+.button {
+	-fx-background-color: white;
+	-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 10, 0.5, 0.0, 0.0);
+	-fx-background-radius: 0;
+}
+
+.button:hover {
+	-fx-background-color: grey;
+	-fx-text-fill: black;
+	-fx-cursor: hand;
+}
+
+.button:pressed {
+	-fx-background-color: #555555;
+}
