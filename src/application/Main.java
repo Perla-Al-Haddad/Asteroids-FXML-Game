@@ -29,7 +29,7 @@ public class Main extends Application {
 			// bind pane width and height to canvas width and height
 			controller.gameCanvas.widthProperty().bind(root.widthProperty());
 			controller.gameCanvas.heightProperty().bind(root.heightProperty());					
-			
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {

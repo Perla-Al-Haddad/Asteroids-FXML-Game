@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import javafx.scene.canvas.GraphicsContext;
 
 public class PlayerBody extends KineticBody {
-	
+	final int MAX_NB_OF_LIVES = 1;
 	public Vector force;
 	public Sprite sprite;
 	public ArrayList<PlayerLifeIcon> lifeIcons = new ArrayList<PlayerLifeIcon>();
-	public int nbOfLives = 3;
+	public int nbOfLives = this.MAX_NB_OF_LIVES;
+	public int playerScore = 0;
 
 	public PlayerBody() {
 		super();
@@ -46,6 +47,12 @@ public class PlayerBody extends KineticBody {
 	public void resetLifeIcons() {
 		for (PlayerLifeIcon i : this.lifeIcons)
 			i.resetDeathAnimaton();
+	}
+	public void resetLives() { 
+		this.nbOfLives = this.MAX_NB_OF_LIVES;
+	}
+	public void resetScore() {
+		this.playerScore = 0;
 	}
 	
 }

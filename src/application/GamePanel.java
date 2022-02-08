@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javafx.animation.ScaleTransition;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -96,7 +97,7 @@ public class GamePanel {
 		}
 	}
 	
-	public void detectLaserAsteroidsCollision() {
+	public void detectLaserAsteroidsCollision(Label scoreLabel) {
 		// Detect collision between lasers and asteroids
 		for (int laserNum = 0; laserNum < this.laserList.size(); laserNum++) {
 			KineticBody laser = this.laserList.get(laserNum);
@@ -107,6 +108,8 @@ public class GamePanel {
 					if (this.laserList.size() != 0) 
 						this.laserList.remove(laserNum);
 					this.asteroidsList.remove(asteroidNum);
+					this.updatePlayerScore(asteroid);
+					scoreLabel.setText(String.valueOf(this.player.playerScore));
 				}
 			}
 		}	
@@ -146,14 +149,19 @@ public class GamePanel {
 		}
 	}
 	
-	public void restartGame() {
+	public void restartGame(Label scoreLabel) {
 		this.laserList.clear();
 		this.asteroidsList.clear();
 		this.player.position.setCoords(gameCanvas.getWidth()/2, gameCanvas.getHeight()/2);
-		this.player.nbOfLives = 3;
+		this.player.resetLives();
 		this.player.getVelocity().setLength(0);
 		this.player.rotation = 0;
 		this.player.resetLifeIcons();
+		this.player.resetScore();
+		scoreLabel.setText("000");
 	}
-		
+	
+	public void updatePlayerScore(KineticPolygon asteroid) {
+		this.player.playerScore += asteroid.scoreWorth;
+	}
 }

@@ -14,48 +14,52 @@
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.GameController">
 	<Canvas fx:id="gameCanvas" width="800" height="600"/>
-	<HBox fx:id="livesBox" spacing="10" alignment="top_center">
-		<padding><Insets top="15" right="15" bottom="15" left="15"/></padding>	
+	<padding><Insets top="15" right="15" bottom="15" left="15"/></padding>	
+	<HBox fx:id="livesBox" spacing="10" alignment="top_center"/>
+	<HBox alignment="top_left">
+		<Label fx:id="playerScore" text="000"/>
 	</HBox>
 	<VBox fx:id="startScreen" spacing="15" alignment="center">
 		<Label fx:id="startLabel" text="ASTEROIDS"/> 
 		<AnchorPane >
 		    <Button AnchorPane.topAnchor="0"
-		            AnchorPane.leftAnchor="0"
-		            AnchorPane.rightAnchor="0"
+		            AnchorPane.leftAnchor="-15"
+		            AnchorPane.rightAnchor="-15"
 		            AnchorPane.bottomAnchor="0"
 		            fx:id="startBtn" text="START"/>
 		</AnchorPane>
 		<AnchorPane >
 			<Button AnchorPane.topAnchor="0"
-		            AnchorPane.leftAnchor="0"
-		            AnchorPane.rightAnchor="0"
+		            AnchorPane.leftAnchor="-15"
+		            AnchorPane.rightAnchor="-15"
 		            AnchorPane.bottomAnchor="0"
-		            fx:id="startScreenQuitBtn" text="QUIT"/>		        
+		            fx:id="startScreenQuitBtn" text="QUIT"
+		            onAction="#handleCloseButtonAction"/>		        
 		</AnchorPane>
 	</VBox>
 	<VBox fx:id="gameOverScreen" spacing="15" alignment="center">
 		<Label fx:id="gameOverLabel" text="GAME OVER"/> 
 		<AnchorPane >
 			<Button AnchorPane.topAnchor="0"
-		            AnchorPane.leftAnchor="0"
-		            AnchorPane.rightAnchor="0"
+		            AnchorPane.leftAnchor="-15"
+		            AnchorPane.rightAnchor="-15"
 		            AnchorPane.bottomAnchor="0"
-		            fx:id="restartBtn" text="RESTART"></Button>
+		            fx:id="restartBtn" text="RESTART"/>
 		</AnchorPane>
 		<AnchorPane >
 			<Button AnchorPane.topAnchor="0"
-		            AnchorPane.leftAnchor="0"
-		            AnchorPane.rightAnchor="0"
+		            AnchorPane.leftAnchor="-15"
+		            AnchorPane.rightAnchor="-15"
 		            AnchorPane.bottomAnchor="0"
-		            fx:id="highScoreBtn" text="HIGH SCORE"></Button>
+		            fx:id="highScoreBtn" text="HIGH SCORE"/>
 		</AnchorPane>
 		<AnchorPane >
 			<Button AnchorPane.topAnchor="0"
-		            AnchorPane.leftAnchor="0"
-		            AnchorPane.rightAnchor="0"
+		            AnchorPane.leftAnchor="-15"
+		            AnchorPane.rightAnchor="-15"
 		            AnchorPane.bottomAnchor="0"
-		            fx:id="gameOverScreenQuitBtn" text="QUIT"/>		        
+		            fx:id="gameOverScreenQuitBtn" text="QUIT"
+		            onAction="#handleCloseButtonAction"/>		        
 		</AnchorPane>
 	</VBox>
 </StackPane>

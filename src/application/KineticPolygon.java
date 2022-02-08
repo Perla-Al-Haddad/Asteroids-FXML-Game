@@ -11,6 +11,7 @@ public class KineticPolygon extends KineticBody {
 	public double[] xCoords;
 	public double[] yCoords;
 	public int verticesNb;
+	public int scoreWorth;
 	
 	public KineticPolygon(double WINDOW_WIDTH, double WINDOW_HEIGHT) {
 		super();
@@ -34,6 +35,7 @@ public class KineticPolygon extends KineticBody {
 					this.verticesNb, 30, 70); // generate random polygon vertices 
 		double center[] = this.calculateCentroid();
 		this.position.setCoords(center[0], center[1]); // calculate the center of the polygon
+		this.scoreWorth = (int) (Math.random() * 50 + 10);
 	}
 	
 	public double arrayMax(double[] arr) {

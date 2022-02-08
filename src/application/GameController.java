@@ -16,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
@@ -24,6 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class GameController implements Initializable {
@@ -34,7 +34,8 @@ public class GameController implements Initializable {
 	@FXML public Canvas gameCanvas;
 
 	@FXML private HBox livesBox;
-
+	@FXML private Label playerScore;
+	
 	@FXML private Label gameOverLabel;
 	@FXML private Button restartBtn;
 	@FXML private VBox gameOverScreen;
@@ -45,7 +46,12 @@ public class GameController implements Initializable {
 	@FXML private VBox startScreen;
 	@FXML private Button startBtn;
 	@FXML private Button startScreenQuitBtn;
-
+	
+	@FXML void handleCloseButtonAction(ActionEvent event) {
+		Stage stage = (Stage) gameCanvas.getScene().getWindow();
+	    stage.close();
+	}
+	
 	public void keyPressed(KeyEvent event) {
 		String keyName = event.getCode().toString();
 		if (!keyPressedList.contains(keyName))
@@ -79,6 +85,9 @@ public class GameController implements Initializable {
 		startLabel.setFont(startfont);
 		startLabel.setTextFill(Color.WHITE);
 
+		playerScore.setFont(primaryBtnfont);
+		playerScore.setTextFill(Color.WHITE);
+		
 		restartBtn.setFont(primaryBtnfont);
 		restartBtn.setPadding(new Insets(15));
 		restartBtn.setFocusTraversable(false);
@@ -129,7 +138,7 @@ public class GameController implements Initializable {
 				
 				gamepanel.spawnAsteroids();
 				
-				gamepanel.detectLaserAsteroidsCollision();
+				gamepanel.detectLaserAsteroidsCollision(playerScore);
 				
 				if (gamepanel.detectPlayerAsteroidsCollision(gameOverScreen, scaleAnimation))
 					this.stop();
@@ -138,7 +147,7 @@ public class GameController implements Initializable {
 		};
 		
 		restartBtn.setOnMouseClicked(e -> {
-			gamepanel.restartGame();
+			gamepanel.restartGame(playerScore);
 			gameOverScreen.setStyle("visibility: hidden");
 			gameloop.start();
 		});
@@ -147,6 +156,7 @@ public class GameController implements Initializable {
 			gameloop.start();
 			startScreen.setStyle("visibility: hidden;");
 		});
+		
 	}
 	
 }
