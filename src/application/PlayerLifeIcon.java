@@ -18,7 +18,7 @@ public class PlayerLifeIcon {
 	public PlayerLifeIcon(String imageFileName) {
 		this.icon = new Sprite(imageFileName);
 		this.iconImageView = new ImageView(icon.image);
-		this.iconImageView.setStyle("-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.2), 10, 0.6, 0.0, 0.0);");
+		this.iconImageView.setStyle("-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 10, 0.6, 0.0, 0.0);");
 		this.movePivot(this.iconImageView, -10, 0);
 		this.iconImageView.setRotate(this.iconImageView.getRotate() + 45);
 		
@@ -40,5 +40,15 @@ public class PlayerLifeIcon {
 	public void playDeathAnimation() {
 		this.rotateAnimation.play();
 		this.scaleAnimation.play();
+	}
+	
+	public void resetDeathAnimaton() {
+		this.rotateAnimation.jumpTo(Duration.ZERO);
+	    this.rotateAnimation.stop();
+		this.scaleAnimation.setToY(1);
+		this.scaleAnimation.setToX(1);
+		this.scaleAnimation.play();
+		this.scaleAnimation.setToY(0);
+		this.scaleAnimation.setToX(0);
 	}
 }
