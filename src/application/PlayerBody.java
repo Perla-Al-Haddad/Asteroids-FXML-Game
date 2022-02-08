@@ -22,7 +22,7 @@ public class PlayerBody extends KineticBody {
 		this.sprite.setImage(imageFileName);
 		this.boundary.setSize(this.sprite.getWidth()-25, this.sprite.getHeight()-25);
 		for (int i = 0; i < nbOfLives; i++)
-			this.lifeIcons.add(new PlayerLifeIcon(imageFileName));
+			this.lifeIcons.add(new PlayerLifeIcon("\\images\\lifeIcon.png"));
 	}
 	
 	public void boost() {
@@ -41,6 +41,11 @@ public class PlayerBody extends KineticBody {
 		context.drawImage(this.sprite.image, 0, 0);
 		context.restore();
 //		this.boundary.render(context, this);
+	}
+	
+	public void resetLifeIcons() {
+		for (PlayerLifeIcon i : this.lifeIcons)
+			i.resetDeathAnimaton();
 	}
 	
 }

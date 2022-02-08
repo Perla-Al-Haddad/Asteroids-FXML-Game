@@ -76,12 +76,12 @@ public class GameController implements Initializable {
 		gameOverLabel.setFont(gameOverfont);
 		gameOverLabel.setTextFill(Color.WHITE);
 
+		startLabel.setFont(startfont);
+		startLabel.setTextFill(Color.WHITE);
+
 		restartBtn.setFont(primaryBtnfont);
 		restartBtn.setPadding(new Insets(15));
 		restartBtn.setFocusTraversable(false);
-
-		startLabel.setFont(startfont);
-		startLabel.setTextFill(Color.WHITE);
 		
 		startBtn.setFont(primaryBtnfont);
 		startBtn.setPadding(new Insets(15));
@@ -94,137 +94,55 @@ public class GameController implements Initializable {
 		gameOverScreenQuitBtn.setFont(secondaryBtnfont);
 		gameOverScreenQuitBtn.setFocusTraversable(false);
 		
-		GraphicsContext context = gameCanvas.getGraphicsContext2D();
-		context.fillRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
-		// refill canvas background color to all black on screen resize and update WINDOW dimensions 
-		gameCanvas.widthProperty().addListener(observable -> context.fillRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight()));
-		gameCanvas.heightProperty().addListener(observable -> context.fillRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight()));
-
-		PlayerBody player = new PlayerBody("\\images\\player.png");
-		player.position.setCoords(gameCanvas.getWidth()/2, gameCanvas.getHeight()/2);
-
-		for (PlayerLifeIcon l: player.lifeIcons)
-			livesBox.getChildren().add(l.iconImageView);
+		ScaleTransition scaleAnimation = new ScaleTransition(Duration.millis(1500), gameOverLabel);
+		scaleAnimation.setByX(0.1);
+		scaleAnimation.setByY(0.1);
+		scaleAnimation.setAutoReverse(true); 
+		scaleAnimation.setCycleCount(Animation.INDEFINITE);
+		scaleAnimation.setInterpolator(Interpolator.EASE_BOTH);
 		
-		ArrayList<LaserBody> laserList = new ArrayList<LaserBody>();
-		ArrayList<KineticPolygon> asteroidsList = new ArrayList<KineticPolygon>();
-		int asteroidCount = 12; // Set max number of asteroids
+		GamePanel gamepanel = new GamePanel(gameCanvas);		
+		gamepanel.renderPlayerLives(livesBox);
 		
 		AnimationTimer gameloop = new AnimationTimer() {
 			public void handle(long nanotime) {
 				// process user input
 				if (keyPressedList.contains("LEFT"))
-					player.rotation -= 4;
+					gamepanel.player.rotation -= 4;
 				if (keyPressedList.contains("RIGHT"))
-					player.rotation += 4;
+					gamepanel.player.rotation += 4;
 				if (keyPressedList.contains("UP")) {
-					player.boost();
-				}
-				
-				player.getVelocity().multiply(0.98); // add friction to user movement
-				player.wrap(gameCanvas); // check if the player has exited the canvas space and wrap if they did
-				player.update(1/60.0); 
+					gamepanel.player.boost();
+				}				
+				gamepanel.player.getVelocity().multiply(0.98); // add friction to user movement
+				gamepanel.player.wrap(gameCanvas); // check if the gamepanel.player has exited the canvas space and wrap if they did
 				
 				// Create new laser when player clicks space
 				if (keyJustPressedList.contains("SPACE")) 
-					if (laserList.size() < 4) { // only create a new laser if there are less than 4 lasers currently on screen (avoid spamming)
-						LaserBody laser = new LaserBody("\\images\\laser.png");
-						laser.position.setCoords(player.position.getX(), player.position.getY());
-						laser.getVelocity().setLength(800);
-						laser.getVelocity().setAngle(player.rotation);
-						laserList.add(laser);
-						keyJustPressedList.clear();
-					}
+					gamepanel.spawnLaser();
 				keyJustPressedList.clear();
 				
-				// Remove laser from array when it exits the screen
-				for (int i = 0; i < laserList.size(); i++) {
-					KineticBody laser = laserList.get(i);
-					laser.update(1/60.0);
-					if (laser.position.getX() > gameCanvas.getWidth()) 
-						laserList.remove(i);
-					else if (laser.position.getX() < 0) 
-						laserList.remove(i);
-					if (laser.position.getY() > gameCanvas.getHeight()) 
-						laserList.remove(i);
-					else if (laser.position.getY() < 0) 
-						laserList.remove(i);
-				}
-				
-				// Remove asteroid from array when it exits the screen
-				for (int i = 0; i < asteroidsList.size(); i++) {
-					KineticPolygon asteroid = asteroidsList.get(i);
-					if (asteroid.position.getX() > gameCanvas.getWidth() + asteroid.boundary.getWidth()) 
-						asteroidsList.remove(i);
-					else if (asteroid.position.getX() < -asteroid.boundary.getWidth()) 
-						asteroidsList.remove(i);
-					if (asteroid.position.getY() > gameCanvas.getHeight() + asteroid.boundary.getHeight()) 
-						asteroidsList.remove(i);
-					else if (asteroid.position.getY() < -asteroid.boundary.getHeight()) 
-						asteroidsList.remove(i);
-				}
-				// If there are less than the maximum amount of asteroids in the array, create a new asteroid
-				if (asteroidsList.size() < asteroidCount) {
-					KineticPolygon asteroid = new KineticPolygon(gameCanvas.getWidth(), gameCanvas.getHeight());
-					asteroidsList.add(asteroid);
-				}
-				// Detect collision between lasers and asteroids
-				for (int laserNum = 0; laserNum < laserList.size(); laserNum++) {
-					KineticBody laser = laserList.get(laserNum);
-					for (int asteroidNum = 0; asteroidNum < asteroidsList.size(); asteroidNum++) {
-						KineticPolygon asteroid = asteroidsList.get(asteroidNum);
-						// On collision remove laser and asteroid from the lists
-						if (asteroid.overlaps(laser)) {
-							if (laserList.size() != 0) 
-								laserList.remove(laserNum);
-							asteroidsList.remove(asteroidNum);
-						}
-					}
-				}
-				
-				// Detect collision between player and asteroids
-				for (int i = 0; i < asteroidsList.size(); i++) {
-					KineticPolygon asteroid = asteroidsList.get(i);
-					// On collision between the player and asteroid
-					if (asteroid.overlaps(player)) {
-						// If the player still has lives, reset the player coords to the center of the screen
-						// And remove all asteroids from asteroid list
-						if (player.nbOfLives > 0) {
-							context.setFill(Color.WHITE);
-							player.position.setCoords(gameCanvas.getWidth()/2, gameCanvas.getHeight()/2);
-							player.lifeIcons.get(--player.nbOfLives).playDeathAnimation();
-							asteroidsList.clear();
-						} else { // if the player has no more live, add the GAME OVER menu, and stop the animation timer
-							ScaleTransition scaleAnimation = new ScaleTransition(Duration.millis(1500), gameOverLabel);
-							scaleAnimation.setByX(0.1);
-							scaleAnimation.setByY(0.1);
-							scaleAnimation.setAutoReverse(true); 
-							scaleAnimation.setCycleCount(Animation.INDEFINITE);
-							scaleAnimation.setInterpolator(Interpolator.EASE_BOTH);
-							scaleAnimation.play();
-							gameOverScreen.setStyle("visibility: visible;");
+				gamepanel.update();
 
-							this.stop();
-						}
-					}
-				}
+				gamepanel.handleLaserDeletion();
+				gamepanel.handleAsteroidsDeletion();
 				
-				for (int i = 0; i < asteroidsList.size(); i++) {
-					KineticPolygon asteroid = asteroidsList.get(i);
-					asteroid.update(1/60.0);
-				}
-
-				context.fillRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
-				for (LaserBody laser : laserList) 
-					laser.render(context);
-				for (KineticPolygon asteroid : asteroidsList) 
-					asteroid.render(context);
-				player.render(context);
+				gamepanel.spawnAsteroids();
+				
+				gamepanel.detectLaserAsteroidsCollision();
+				
+				if (gamepanel.detectPlayerAsteroidsCollision(gameOverScreen, scaleAnimation))
+					this.stop();
+				gamepanel.render();
 			}
 		};
-//		restartBtn.setOnMouseClicked(e -> {
-//			gameloop.start();
-//		});
+		
+		restartBtn.setOnMouseClicked(e -> {
+			gamepanel.restartGame();
+			gameOverScreen.setStyle("visibility: hidden");
+			gameloop.start();
+		});
+		
 		startBtn.setOnMouseClicked(e -> {
 			gameloop.start();
 			startScreen.setStyle("visibility: hidden;");
