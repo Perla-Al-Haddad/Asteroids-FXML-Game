@@ -8,77 +8,73 @@ import javafx.scene.transform.Rotate;
 
 public class KineticPolygon extends KineticBody {
 	private double spin;
-	public double[] xCoords;
-	public double[] yCoords;
-	public int verticesNb;
-	public int scoreWorth;
+	private double[] xCoords;
+	private double[] yCoords;
+	private int verticesNb;
+	private int scoreWorth;
+
+	private AsteroidType type;
 	
-	public KineticPolygon(double WINDOW_WIDTH, double WINDOW_HEIGHT) {
+	public KineticPolygon() {
 		super();
-		this.verticesNb = (int) (Math.floor(7*Math.random()) + 5);
+		this.construct();
+		this.generateCoordsWraper(GameSettings.PARENT_ASTEROID_RANGE[0], GameSettings.PARENT_ASTEROID_RANGE[1]);
+		this.scoreWorth = (int) (Math.random() * GameSettings.PARENT_ASTEROID_SCORE_RANGE[0] + GameSettings.PARENT_ASTEROID_SCORE_RANGE[1]);
+		this.position.setCoords(this.getCenterX(), this.getCenterY()); // calculate the center of the polygon
+		this.type = AsteroidType.PARENT;
+	}
+
+	public KineticPolygon(KineticPolygon parent) {
+		super();
+		this.construct();
+		this.generateCoords(parent.getCenterX(), parent.getCenterY(), this.verticesNb, GameSettings.CHILD_ASTEROID_RANGE[0], GameSettings.CHILD_ASTEROID_RANGE[1]);
+		this.scoreWorth = (int) (Math.random() * GameSettings.CHILD_ASTEROID_SCORE_RANGE[0] + GameSettings.CHILD_ASTEROID_SCORE_RANGE[1]);
+		this.position.setCoords(this.getCenterX(), this.getCenterY()); // calculate the center of the polygon		
+		this.getVelocity().setAngle(Math.random()*360);
+		this.type = AsteroidType.CHILD;
+	}
+
+	public void construct() {
+		this.verticesNb = (int) (Math.floor(7 * Math.random()) + 5);
 		this.xCoords = new double[this.verticesNb];
 		this.yCoords = new double[this.verticesNb];
-		this.velocity.setLength(2*Math.random() + 1); // generate random starting velocity
-		double angleRdm = (Math.random()*10 > 5) ? Math.random()*90+135 : 270+Math.random()*90;
-		this.velocity.setAngle(angleRdm); // generate random starting rotation angle
+		this.getVelocity().setLength(2 * Math.random() + 1); // generate random starting velocity
 		this.spin = Math.random(); // generate random spin
+	}
+	
+	private void generateCoordsWraper(int minRadius, int maxRadius) {
+		double angleRdm = (Math.random()*10 > 5) ? Math.random()*90+135 : 270+Math.random()*90;
 		if (angleRdm < 270) {
 			this.generateCoords(
-					(100 * Math.random() + WINDOW_WIDTH+50), 
-					((WINDOW_HEIGHT) * Math.random()), 
-					this.verticesNb, 30, 70); // generate random polygon vertices 
+					(100 * Math.random() + GameSettings.getInstance().getGameWidth()+50), 
+					((GameSettings.getInstance().getGameHeight()) * Math.random()), 
+					this.verticesNb, minRadius, maxRadius); // generate random polygon vertices 
 		}
 		else if (angleRdm > 90)
 			this.generateCoords(
 					(-100 * Math.random() - 50), 
-					((WINDOW_HEIGHT) * Math.random()), 
-					this.verticesNb, 30, 70); // generate random polygon vertices 
-		double center[] = this.calculateCentroid();
-		this.position.setCoords(center[0], center[1]); // calculate the center of the polygon
-		this.scoreWorth = (int) (Math.random() * 50 + 10);
+					((GameSettings.getInstance().getGameHeight()) * Math.random()), 
+					this.verticesNb, minRadius, maxRadius); // generate random polygon vertices 	
+		this.getVelocity().setAngle(angleRdm); // generate random starting rotation angle
 	}
-	
-	public double arrayMax(double[] arr) {
-	    double max = Double.NEGATIVE_INFINITY;
-	    for(double cur: arr)
-	        max = Math.max(max, cur);
-	    return max;
-	}	
-	public double arrayMin(double[] arr) {
-	    double min = Double.POSITIVE_INFINITY;
-	    for(double cur: arr)
-	        min = Math.min(min, cur);
-	    return min;
-	}
-	public double[] getRect()
-    {
-		double xMax = arrayMax(this.xCoords);
-		double yMax = arrayMax(this.yCoords);
-		double xMin = arrayMin(this.xCoords);
-		double yMin = arrayMin(this.yCoords);
-		double width = xMax - xMin;
-		double height = yMax - yMin;
-		return new double[] {xMin, yMin, width, height};
-    }
 	
 	public void update(double deltaTime) {
 		for (int i = 0; i < this.xCoords.length; i++) {
-			this.xCoords[i] += this.velocity.getX();
-			this.yCoords[i] += this.velocity.getY();
+			this.xCoords[i] += this.getVelocity().getX();
+			this.yCoords[i] += this.getVelocity().getY();
 		}
-		double center[] = this.calculateCentroid();
-		this.position.setCoords(center[0], center[1]);
+		this.position.setCoords(this.getCenterX(), this.getCenterY());
 		this.rotation += this.spin;
 		this.setBoundary();
 	}
 	
 	@Override
 	public void setBoundary() {
-		double rect[] = this.getRect();
+		double rect[] = Utils.getInstance().getRect(xCoords, yCoords);
 		this.boundary.setPosition(rect[0]+rect[2]/5/2, rect[1]+rect[3]/5/2);
 		this.boundary.setSize(rect[2]-rect[2]/5, rect[3]-rect[3]/5);
 	}
-
+	
 	public void generateCoords(double px, double py, int numberOfNodes, double minRadius, double maxRadius) {
 	    // Split a full circle into numberOfNodes step, this is how much to advance each part
 	    double angleStep = Math.PI * 2 / numberOfNodes;
@@ -100,16 +96,11 @@ public class KineticPolygon extends KineticBody {
         gc.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
     }
 	
-	public double[] calculateCentroid() {
-	    double x = 0.;
-	    double y = 0.;
-	    for (int i = 0; i < this.verticesNb; i++){
-	        x += this.xCoords[i];
-	        y += this.yCoords[i];
-	    }
-	    x = x/this.verticesNb;
-	    y = y/this.verticesNb;
-	    return new double[] {x, y};
+	public double getCenterX() {
+		return Utils.getInstance().calculateCentroid(xCoords, yCoords, verticesNb)[0];
+	}
+	public double getCenterY() {
+		return Utils.getInstance().calculateCentroid(xCoords, yCoords, verticesNb)[1];
 	}
 	
 	public void render(GraphicsContext gc) {
@@ -122,6 +113,13 @@ public class KineticPolygon extends KineticBody {
 	    gc.strokePolygon(this.xCoords, this.yCoords, this.verticesNb);
 	    gc.restore();
 //		this.boundary.render(gc, this);
+	}
+
+	public int getScoreWorth() {
+		return scoreWorth;
+	}
+	public AsteroidType getType() {
+		return type;
 	}
 	
 }

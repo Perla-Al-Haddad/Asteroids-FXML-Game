@@ -4,7 +4,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
 public abstract class KineticBody {
-	public Vector velocity;
+	private Vector velocity;
 	public CollisionMask boundary;
 	public Vector position;
 	public double rotation;
@@ -22,13 +22,15 @@ public abstract class KineticBody {
 		return velocity;
 	}
 	
-	
 	public boolean overlaps(KineticBody other) {
 		return this.boundary.overlaps(other.boundary);
 	}
 	
 	public void setBoundary() {
-		this.boundary.setPosition(this.position.getX()-this.boundary.getWidth()/2, this.position.getY()-this.boundary.getHeight()/2);
+		this.boundary.setPosition(
+				this.position.getX()-this.boundary.getWidth()/2, 
+				this.position.getY()-this.boundary.getHeight()/2
+				);
 	}
 	
 	public void update(double deltaTime) {
