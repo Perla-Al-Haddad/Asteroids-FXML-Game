@@ -4,20 +4,19 @@ import javafx.animation.Animation;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
 public class PlayerLifeIcon {
 	   
-	public Sprite icon;
-	public ImageView iconImageView;
-	public RotateTransition rotateAnimation;
-	public ScaleTransition scaleAnimation;
+	private ImageView iconImageView;
+	private RotateTransition rotateAnimation;
+	private ScaleTransition scaleAnimation;
 	
 	public PlayerLifeIcon(String imageFileName) {
-		this.icon = new Sprite(imageFileName);
-		this.iconImageView = new ImageView(icon.image);
+		this.iconImageView = new ImageView(new Image(imageFileName));
 		this.iconImageView.setStyle("-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 10, 0.6, 0.0, 0.0);");
 		this.movePivot(this.iconImageView, -10, 0);
 		this.iconImageView.setRotate(this.iconImageView.getRotate() + 45);
@@ -51,4 +50,9 @@ public class PlayerLifeIcon {
 		this.scaleAnimation.setToY(0);
 		this.scaleAnimation.setToX(0);
 	}
+
+	public ImageView getIcon() {
+		return iconImageView;
+	}
+	
 }

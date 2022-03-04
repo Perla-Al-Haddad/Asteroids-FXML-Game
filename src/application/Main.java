@@ -9,8 +9,6 @@ import javafx.fxml.FXMLLoader;
 
 
 public class Main extends Application {
-	private double WINDOW_WIDTH = 800;
-	private double WINDOW_HEIGHT = 600;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -19,7 +17,7 @@ public class Main extends Application {
 			StackPane root = (StackPane) loader.load();
 			root.requestFocus();
 			
-			Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+			Scene scene = new Scene(root, GameSettings.getInstance().getGameWidth(), GameSettings.getInstance().getGameHeight());
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			
 			GameController controller = loader.getController();
@@ -29,7 +27,7 @@ public class Main extends Application {
 			// bind pane width and height to canvas width and height
 			controller.gameCanvas.widthProperty().bind(root.widthProperty());
 			controller.gameCanvas.heightProperty().bind(root.heightProperty());					
-
+		
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {

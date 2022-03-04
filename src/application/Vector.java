@@ -7,7 +7,6 @@ public class Vector {
 	public Vector() {
 		this.setCoords(0, 0);
 	}
-	
 	public Vector(double x, double y) {
 		this.setCoords(x, y);
 	}
@@ -28,13 +27,10 @@ public class Vector {
 		this.y = y;
 	}
 	
-	// Speed
 	public void add(double dx, double dy) {
 		this.x += dx;
 		this.y += dy;
 	}
-
-	// Acceleration
 	public void multiply(double m) {
 		this.x *= m;
 		this.y *= m;
@@ -62,5 +58,4 @@ public class Vector {
 		this.x = L * Math.cos(angleRadians);
 		this.y = L * Math.sin(angleRadians);	
 	}
-	
 }
