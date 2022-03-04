@@ -16,6 +16,8 @@ public class GameSettings {
 	private Double gameWidth = 800.0;
 	private Double gameHeight = 600.0;
 	
+	private boolean isMuted = false;
+	
     private static GameSettings INSTANCE = null;
 
     private GameSettings() {}
@@ -38,6 +40,13 @@ public class GameSettings {
 	}
 	public void setGameHeight(Double gameHeight) {
 		this.gameHeight = gameHeight;
+	}
+
+	public boolean isMuted() {
+		return isMuted;
+	}
+	public void setMuted(boolean isMuted) {
+		this.isMuted = isMuted;
 	}
 
 }

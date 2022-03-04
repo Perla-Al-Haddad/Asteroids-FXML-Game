@@ -1,12 +1,12 @@
 package application;
 	
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
-
 
 public class Main extends Application {
 	
@@ -14,7 +14,7 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("GameMain.fxml"));
-			StackPane root = (StackPane) loader.load();
+			Pane root = (Pane) loader.load();
 			root.requestFocus();
 			
 			Scene scene = new Scene(root, GameSettings.getInstance().getGameWidth(), GameSettings.getInstance().getGameHeight());

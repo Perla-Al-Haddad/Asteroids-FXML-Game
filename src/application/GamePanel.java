@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import javafx.animation.ScaleTransition;
@@ -8,6 +9,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 
 public class GamePanel {
@@ -19,6 +22,10 @@ public class GamePanel {
 	private KineticBodyFactory playerFactory = new KineticPlayerFactory();
 	private KineticLaserFactory laserFactory = new KineticLaserFactory();
 	private KineticPolygonFactory polygonFactory = new KineticPolygonFactory();
+
+	String laserpath = System.getProperty("user.dir") + "\\src\\resources\\music\\laserShoot.wav";  
+	Media lasermedia = new Media(new File(laserpath).toURI().toString());
+	MediaPlayer shootPlayer = new MediaPlayer(lasermedia);
 	
 	public GamePanel(Canvas gameCanvas) {
 		this.player = (KineticPlayer) playerFactory.getKineticBody();
@@ -92,6 +99,10 @@ public class GamePanel {
 	public void spawnLaser() {
 		if (this.laserList.size() < GameSettings.MAX_LASER_ON_SCREEN) { // only create a new laser if there are less than 4 lasers currently on screen (avoid spamming)
 			KineticLaser laser = (KineticLaser) laserFactory.getKineticBody();
+			if (!GameSettings.getInstance().isMuted()) {
+				shootPlayer = new MediaPlayer(lasermedia);
+				this.shootPlayer.play();
+			}
 			laser.position.setCoords(this.player.position.getX(), this.player.position.getY());
 			laser.getVelocity().setLength(800);
 			laser.getVelocity().setAngle(this.player.rotation);
@@ -100,6 +111,8 @@ public class GamePanel {
 	}
 	
 	public void detectLaserAsteroidsCollision(Label scoreLabel) {
+		String explosionpath = System.getProperty("user.dir") + "\\src\\resources\\music\\explosion.wav";  
+		Media explosionmedia = new Media(new File(explosionpath).toURI().toString());
 		// Detect collision between lasers and asteroids
 		for (int laserNum = 0; laserNum < this.laserList.size(); laserNum++) {
 			KineticBody laser = this.laserList.get(laserNum);
@@ -110,6 +123,10 @@ public class GamePanel {
 					if (this.laserList.size() != 0) 
 						this.laserList.remove(laserNum);
 					this.asteroidsList.remove(asteroidNum);
+					if (!GameSettings.getInstance().isMuted()) {
+						MediaPlayer explosionPlayer = new MediaPlayer(explosionmedia);
+						explosionPlayer.play();
+					}
 					this.updatePlayerScore(asteroid);
 					if (asteroid.getType() == AsteroidType.PARENT) {
 						int spawnNb = (int) (Math.random()*GameSettings.MAX_CHILD_ASTEROIDS_NUMBER);
@@ -131,6 +148,12 @@ public class GamePanel {
 			KineticPolygon asteroid = this.asteroidsList.get(i);
 			// On collision between the player and asteroid
 			if (asteroid.overlaps(this.player)) {
+				if (!GameSettings.getInstance().isMuted()) {
+					String deathpath = System.getProperty("user.dir") + "\\src\\resources\\music\\death.wav";  
+					Media deathmedia = new Media(new File(deathpath).toURI().toString());
+					MediaPlayer deathPlayer = new MediaPlayer(deathmedia);
+					deathPlayer.play();
+				}
 				// If the player still has lives, reset the player coords to the center of the screen
 				// And remove all asteroids from asteroid list
 				if (this.player.getNbOfLives() > 0) {
@@ -182,5 +205,7 @@ public class GamePanel {
 		return player;
 	}
 	
-	
+	public void toggleMuteGame() {
+		GameSettings.getInstance().setMuted(!GameSettings.getInstance().isMuted());
+	}
 }
