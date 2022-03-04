@@ -3,29 +3,24 @@ package application;
 import java.util.ArrayList;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
-public class PlayerBody extends KineticBody {
-	final int MAX_NB_OF_LIVES = 1;
-	public Vector force;
-	public Sprite sprite;
-	public ArrayList<PlayerLifeIcon> lifeIcons = new ArrayList<PlayerLifeIcon>();
-	public int nbOfLives = this.MAX_NB_OF_LIVES;
-	public int playerScore = 0;
+public class KineticPlayer extends KineticBody {
+	private Vector force;
+	private ArrayList<PlayerLifeIcon> lifeIcons = new ArrayList<PlayerLifeIcon>();
+	private int nbOfLives = GameSettings.MAX_NB_OF_LIVES;
+	private int playerScore = 0;
+	private Image sprite; 
 
-	public PlayerBody() {
+	public KineticPlayer(String imageFileName) {
 		super();
 		this.force = new Vector();
-		this.sprite = new Sprite();
-	}
-	
-	public PlayerBody(String imageFileName) {
-		this();
-		this.sprite.setImage(imageFileName);
-		this.boundary.setSize(this.sprite.getWidth()-25, this.sprite.getHeight()-25);
+		this.sprite = new Image(imageFileName);
+		this.boundary.setSize(this.sprite.getWidth()-GameSettings.PLAYER_BOUNDARY_REDUCTION, this.sprite.getHeight()-GameSettings.PLAYER_BOUNDARY_REDUCTION);
 		for (int i = 0; i < nbOfLives; i++)
 			this.lifeIcons.add(new PlayerLifeIcon("\\images\\lifeIcon.png"));
 	}
-	
+
 	public void boost() {
 		this.force.setAngle(this.rotation);
 		this.force.setLength(0.5);
@@ -39,7 +34,7 @@ public class PlayerBody extends KineticBody {
 		context.translate(this.position.getX(), this.position.getY());
 		context.rotate(this.rotation);
 		context.translate(-this.sprite.getWidth()/2, -this.sprite.getHeight()/2);
-		context.drawImage(this.sprite.image, 0, 0);
+		context.drawImage(this.sprite, 0, 0);
 		context.restore();
 //		this.boundary.render(context, this);
 	}
@@ -49,10 +44,28 @@ public class PlayerBody extends KineticBody {
 			i.resetDeathAnimaton();
 	}
 	public void resetLives() { 
-		this.nbOfLives = this.MAX_NB_OF_LIVES;
+		this.nbOfLives = GameSettings.MAX_NB_OF_LIVES;
 	}
 	public void resetScore() {
 		this.playerScore = 0;
+	}
+
+	public ArrayList<PlayerLifeIcon> getLifeIcons() {
+		return lifeIcons;
+	}
+	
+	public int getNbOfLives() {
+		return nbOfLives;
+	}
+	public void setNbOfLives() {
+		this.nbOfLives--;
+	}
+
+	public int getPlayerScore() {
+		return playerScore;
+	}
+	public void incrementPlayerScore(int score) {
+		this.playerScore += score;
 	}
 	
 }

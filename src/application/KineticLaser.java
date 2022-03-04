@@ -1,16 +1,15 @@
 package application;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
-public class LaserBody extends KineticBody {
-	public Sprite sprite;
+public class KineticLaser extends KineticBody {
+	public Image sprite;
 
-	public LaserBody(String imageFileName) {
-		this.sprite = new Sprite();
-		this.sprite.setImage(imageFileName);
+	public KineticLaser(String imageFileName) {
+		this.sprite = new Image(imageFileName);
 		this.boundary.setSize(this.sprite.getWidth(), this.sprite.getHeight());
 	}
-	
 	
 	public void render(GraphicsContext context) {
 		context.save();
@@ -18,7 +17,7 @@ public class LaserBody extends KineticBody {
 		context.translate(this.position.getX(), this.position.getY());
 		context.rotate(this.rotation);
 		context.translate(-this.sprite.getWidth()/2, -this.sprite.getHeight()/2);
-		context.drawImage(this.sprite.image, 0, 0);
+		context.drawImage(this.sprite, 0, 0);
 		context.restore();
 	}
 	
